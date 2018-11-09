@@ -4,15 +4,16 @@
     "description": "",
     "dependencies": {
         "core": "*",
-        "radio": "*"
+        "radio": "*",
+        "AlphaBot2": "github:rotysz/alphabot2#v1.0.4"
     },
     "files": [
         "README.md",
-        "main.ts"
+        "main.ts",
+        "alpha.ts"
     ],
     "testFiles": [
         "test.ts"
     ],
-    "public": false,
-    "additionalFilePaths": []
+    "public": false
 }
