@@ -15,7 +15,6 @@ const OFF = false
 const MSG_DIST = "odleg"
 const MSG_LINESENSORS = "czlini"
 
-const INIT_GROUP = 2
 
 let SpeedLeft: number = 0
 let SpeedRight: number = 0

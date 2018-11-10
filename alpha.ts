@@ -4,6 +4,8 @@
  * Read more at https://makecode.microbit.org/blocks/custom
  */
 
+const INIT_GROUP = 1
+
 namespace RobotImp {
     export function MotorLeft(SpeedVal: number) {
         AlphaBot2.MotorRun(Motors.M1, SpeedVal)
