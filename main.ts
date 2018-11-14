@@ -10,7 +10,7 @@ const CMD_CHGMTRSPEED = "zmienszy"
 const CMD_CHGGROUP = "grupa"
 const CMD_GETDIST = "odl"
 const CMD_GETLINE = "lsensor"
-const CMD_SETOPT ="set_opt"
+const CMD_SETOPT = "set_opt"
 
 const ON = true
 const OFF = false
@@ -42,9 +42,9 @@ input.onButtonPressed(Button.AB, function () {
 
 input.onButtonPressed(Button.A, function () {
     if (DebugMode) {
-      basic.showString('C')
-      RobotImp.Init()
-      basic.clearScreen()
+        basic.showString('C')
+        RobotImp.Init()
+        basic.clearScreen()
     }
 })
 
@@ -113,17 +113,17 @@ function CmdChangeRadioGroup(On: boolean, NewRadioGroup: number) {
     }
 }
 
-function CmdGetDist (Value: number) {
+function CmdGetDist(Value: number) {
     radio.sendValue(RET_DIST, RobotImp.GetDistance())
 }
 
-function CmdGetLSensors (Value: number) {
+function CmdGetLSensors(Value: number) {
     radio.sendValue(RET_LINESENSORS, RobotImp.LineSensorStatus())
 }
 
 function CmdSetOpt(Value: number) {
     EnableMsgDist = (Value % 10) != 0
-    EnableMsgLine = (Math.idiv(Value,10) % 10) !=0 
+    EnableMsgLine = (Math.idiv(Value, 10) % 10) != 0
 }
 
 radio.onReceivedValue(function (Cmd: string, CmdValue: number) {
@@ -159,5 +159,5 @@ basic.forever(function () {
     }
     if (EnableMsgDist) radio.sendValue(MSG_DIST, RobotImp.GetDistance())
     if (EnableMsgLine) radio.sendValue(MSG_LINESENSORS, RobotImp.LineSensorStatus())
-    basic.pause(10)
+    basic.pause(2)
 })
