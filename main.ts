@@ -40,6 +40,14 @@ input.onButtonPressed(Button.AB, function () {
     basic.showString(' D=' + DebugMode)
 })
 
+input.onButtonPressed(Button.A, function () {
+    if (DebugMode) {
+      basic.showString('C')
+      RobotImp.Init()
+      basic.clearScreen()
+    }
+})
+
 function CmdForward(On: boolean, Duration: number, SpeedL: number, SpeedR: number) {
     if (On) {
         LastCmd = CMD_FWD

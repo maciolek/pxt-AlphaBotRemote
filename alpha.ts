@@ -32,4 +32,8 @@ namespace RobotImp {
         }
         return LineSensor
     }
+
+    export function Init() {
+      AlphaBot2.SensorCalibrated()
+    }
 }
