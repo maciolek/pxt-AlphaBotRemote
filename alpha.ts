@@ -27,7 +27,7 @@ namespace RobotImp {
         let LineSensor = 0
         for (i = 0; i < 5; i++) {
             let value = sensor_values[i];
-            if (value > 250) LineSensor = LineSensor + Multiplier
+            if (value > 300) LineSensor = LineSensor + Multiplier
             Multiplier = Multiplier * 10
         }
         return LineSensor

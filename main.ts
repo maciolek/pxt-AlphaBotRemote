@@ -48,6 +48,32 @@ input.onButtonPressed(Button.A, function () {
     }
 })
 
+input.onButtonPressed(Button.B, function () {
+    let Sens = RobotImp.LineSensorStatus()
+    do {
+        Sens = RobotImp.LineSensorStatus()
+        let s1=Math.idiv((Sens%100),10)
+        let s2=Math.idiv(Sens,1000) % 10
+        Sens = s2 *10 + s1
+        if (Sens == 11) {
+            RobotImp.MotorLeft(30)
+            RobotImp.MotorRight(30)
+        } else if (Sens == 10) {
+            RobotImp.MotorLeft(0)
+            RobotImp.MotorRight(20)
+        } else if (Sens == 1) {
+            RobotImp.MotorLeft(20)
+            RobotImp.MotorRight(0)
+        } else {
+            RobotImp.MotorLeft(20)
+            RobotImp.MotorRight(20)
+        }
+        basic.pause(10)
+    } while (!input.buttonIsPressed(Button.A))
+    RobotImp.MotorLeft(0)
+    RobotImp.MotorRight(0)
+})
+
 function CmdForward(On: boolean, Duration: number, SpeedL: number, SpeedR: number) {
     if (On) {
         LastCmd = CMD_FWD
