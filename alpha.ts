@@ -27,13 +27,26 @@ namespace RobotImp {
         let LineSensor = 0
         for (i = 0; i < 5; i++) {
             let value = sensor_values[i];
-            if (value > 500) LineSensor = LineSensor + Multiplier
+            if (value > 250) LineSensor = LineSensor + Multiplier
             Multiplier = Multiplier * 10
         }
         return LineSensor
     }
 
     export function Init() {
-      AlphaBot2.SensorCalibrated()
+        AlphaBot2.SensorCalibrated()
+        while (!input.buttonIsPressed(Button.A)) {
+            basic.clearScreen()
+            let sv = AlphaBot2.readCalibrated()
+            let i = 0
+            let val = 0
+            for (i = 0; i < 5; i++) {
+                val = Math.idiv(sv[i], 200)
+                if (val > 4) val = 4
+                led.plot(i, val)
+
+            }
+            basic.pause(1000)
+        }
     }
 }
