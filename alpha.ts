@@ -49,4 +49,30 @@ namespace RobotImp {
             basic.pause(1000)
         }
     }
+
+    export function FollowTheLine () {
+        let Sens = RobotImp.LineSensorStatus()
+        do {
+            Sens = RobotImp.LineSensorStatus()
+            let s1 = Math.idiv((Sens % 100), 10)
+            let s2 = Math.idiv(Sens, 1000) % 10
+            Sens = s2 * 10 + s1
+            if (Sens == 11) {
+                RobotImp.MotorLeft(40)
+                RobotImp.MotorRight(40)
+            } else if (Sens == 10) {
+                RobotImp.MotorLeft(0)
+                RobotImp.MotorRight(30)
+            } else if (Sens == 1) {
+                RobotImp.MotorLeft(30)
+                RobotImp.MotorRight(0)
+            } else {
+                RobotImp.MotorLeft(30)
+                RobotImp.MotorRight(30)
+            }
+            basic.pause(10)
+        } while (!input.buttonIsPressed(Button.A))
+        RobotImp.MotorLeft(0)
+        RobotImp.MotorRight(0)  
+    } 
 }

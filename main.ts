@@ -11,6 +11,11 @@ const CMD_CHGGROUP = "grupa"
 const CMD_GETDIST = "odl"
 const CMD_GETLINE = "lsensor"
 const CMD_SETOPT = "set_opt"
+const CMD_GETDURATION = "dczas"
+
+const CMD_DISPSTR = "#ST#"
+const CMD_DSPLED = "#LD#"
+const CMD_DSPICON = "w_iko"
 
 const ON = true
 const OFF = false
@@ -20,6 +25,9 @@ const MSG_LINESENSORS = "czlini"
 
 const RET_DIST = "rodl"
 const RET_LINESENSORS = "rlsens"
+const RET_DURATION = "pczas"
+const RET_END_TIME = "kczas"
+
 
 
 let SpeedLeft: number = 0
@@ -33,7 +41,13 @@ let DebugMode = false
 let EnableMsgDist = false
 let EnableMsgLine = false
 
-radio.setGroup(INIT_GROUP)
+let DspVal = ''
+
+let RadioCh = INIT_GROUP
+if (input.buttonIsPressed(Button.A)) RadioCh = INIT_GROUP + 10
+else if (input.buttonIsPressed(Button.B)) RadioCh = INIT_GROUP + 20
+radio.setGroup(RadioCh)
+basic.showString("CH=" + RadioCh)
 
 input.onButtonPressed(Button.AB, function () {
     DebugMode = !DebugMode
@@ -49,29 +63,7 @@ input.onButtonPressed(Button.A, function () {
 })
 
 input.onButtonPressed(Button.B, function () {
-    let Sens = RobotImp.LineSensorStatus()
-    do {
-        Sens = RobotImp.LineSensorStatus()
-        let s1=Math.idiv((Sens%100),10)
-        let s2=Math.idiv(Sens,1000) % 10
-        Sens = s2 *10 + s1
-        if (Sens == 11) {
-            RobotImp.MotorLeft(30)
-            RobotImp.MotorRight(30)
-        } else if (Sens == 10) {
-            RobotImp.MotorLeft(0)
-            RobotImp.MotorRight(20)
-        } else if (Sens == 1) {
-            RobotImp.MotorLeft(20)
-            RobotImp.MotorRight(0)
-        } else {
-            RobotImp.MotorLeft(20)
-            RobotImp.MotorRight(20)
-        }
-        basic.pause(10)
-    } while (!input.buttonIsPressed(Button.A))
-    RobotImp.MotorLeft(0)
-    RobotImp.MotorRight(0)
+    RobotImp.FollowTheLine()
 })
 
 function CmdForward(On: boolean, Duration: number, SpeedL: number, SpeedR: number) {
@@ -147,9 +139,55 @@ function CmdGetLSensors(Value: number) {
     radio.sendValue(RET_LINESENSORS, RobotImp.LineSensorStatus())
 }
 
+function CmdGetDuration() {
+    radio.sendValue(RET_DURATION, MotorOffTime - input.runningTime())
+}
+
+function CmdEndMotorTime() {
+    radio.sendValue(RET_END_TIME, input.runningTime())
+}
+
 function CmdSetOpt(Value: number) {
     EnableMsgDist = (Value % 10) != 0
     EnableMsgLine = (Math.idiv(Value, 10) % 10) != 0
+}
+
+function ShowEncodedImg(EImg: string) {
+    let len = EImg.length
+    let pos = 0
+    while (pos < len) {
+        let digits = EImg.substr(pos, 2)
+        let val = parseInt(digits)
+        for (let i = 0; i < 5; i++) {
+            if ((val % 2) == 1) led.plot(4 - i, Math.idiv(pos, 2))
+            else led.unplot(4 - i, Math.idiv(pos, 2))
+            val = Math.idiv(val, 2)
+        }
+        pos = pos + 2
+    }
+}
+function CmdDisplay(receivedString: string) {
+
+    let len = receivedString.length
+    if (len > 4) {
+        let Cmd = receivedString.substr(0, 4)
+        let DspVal = receivedString.substr(4, len - 4)
+        if (DebugMode) {
+            basic.showString(Cmd + ">>" + DspVal)
+        }
+        if (Cmd == CMD_DISPSTR) {
+            control.inBackground(function () {
+                basic.showString(DspVal)
+            })
+        }
+        if (Cmd == CMD_DSPLED) {
+            ShowEncodedImg(DspVal)
+        }
+    }
+}
+
+function CmdDspIcon(Icon: IconNames) {
+    basic.showIcon(Icon)
 }
 
 radio.onReceivedValue(function (Cmd: string, CmdValue: number) {
@@ -157,6 +195,7 @@ radio.onReceivedValue(function (Cmd: string, CmdValue: number) {
         basic.showString(Cmd)
         basic.showNumber(CmdValue)
     }
+    if (Cmd.charAt(0) == '#') CmdDisplay(Cmd)
     if (Cmd == CMD_SETSPEED) CmdSetSpeed(CmdValue)
     if (Cmd == CMD_SETSPEEDL) CmdSetSpeedL(CmdValue)
     if (Cmd == CMD_SETSPEEDR) CmdSetSpeedR(CmdValue)
@@ -169,6 +208,8 @@ radio.onReceivedValue(function (Cmd: string, CmdValue: number) {
     if (Cmd == CMD_GETDIST) CmdGetDist(CmdValue)
     if (Cmd == CMD_GETLINE) CmdGetLSensors(CmdValue)
     if (Cmd == CMD_SETOPT) CmdSetOpt(CmdValue)
+    if (Cmd == CMD_GETDURATION) CmdGetDuration()
+    if (Cmd == CMD_DSPICON) CmdDspIcon(CmdValue)
 })
 
 
@@ -176,6 +217,7 @@ basic.forever(function () {
     if (MotorOffTime != 0) {
         if ((MotorOffTime <= input.runningTime())) {
             CmdForward(OFF, 0, 0, 0)
+            CmdEndMotorTime()
         }
     }
     if (RGrpEndTime != 0) {
