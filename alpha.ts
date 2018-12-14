@@ -4,7 +4,7 @@
  * Read more at https://makecode.microbit.org/blocks/custom
  */
 
-const INIT_GROUP = 1
+const INIT_GROUP = 99
 
 namespace RobotImp {
     export function MotorLeft(SpeedVal: number) {
